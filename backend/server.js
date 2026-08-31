@@ -18,6 +18,21 @@ app.use(cors({
 
 app.use(express.json());
 
+// Root route - to avoid "Route not found" on root URL
+app.get('/', (req, res) => {
+  res.json({ 
+    success: true, 
+    message: 'Hota\'s Kitchen API is running!',
+    endpoints: [
+      '/health',
+      '/api/orders/today',
+      '/api/orders/all',
+      '/api/inventory/items',
+      '/api/dashboard/stats'
+    ]
+  });
+});
+
 // Log all requests for debugging
 app.use((req, res, next) => {
   console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
@@ -52,7 +67,6 @@ app.get('/health', (req, res) => {
   res.status(200).json({ status: 'OK', timestamp: new Date() });
 });
 
-// IMPORTANT: Bind to 0.0.0.0 to allow access from mobile devices
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server running on port ${PORT}`);
   console.log(`Local: http://localhost:${PORT}`);
