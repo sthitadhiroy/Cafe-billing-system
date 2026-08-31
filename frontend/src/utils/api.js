@@ -1,17 +1,8 @@
-// Get the current hostname (works for both localhost and mobile)
-const getApiUrl = () => {
-  // If running on localhost (desktop)
-  if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-    return 'http://localhost:5000/api';
-  }
-  // If accessing from mobile/tablet, use the same host as the frontend
-  return `http://${window.location.hostname}:5000/api`;
-};
-
-const API_BASE_URL = getApiUrl();
+// PRODUCTION: Use environment variable
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 export const api = {
-  // Order APIs
+  // Orders
   createOrder: async (orderData) => {
     try {
       const response = await fetch(`${API_BASE_URL}/orders`, {
@@ -60,27 +51,6 @@ export const api = {
     }
   },
 
-  updateOrderStatus: async (orderId, status) => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/orders/${orderId}/status`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ status }),
-      });
-      
-      if (!response.ok) {
-        throw new Error('Failed to update order status');
-      }
-      
-      return await response.json();
-    } catch (error) {
-      console.error('API Error:', error);
-      throw error;
-    }
-  },
-
   getDashboardStats: async () => {
     try {
       const response = await fetch(`${API_BASE_URL}/dashboard/stats`);
@@ -94,12 +64,12 @@ export const api = {
     }
   },
 
-  // Inventory APIs
-  getInventoryItems: async () => {
+  // Inventory
+  getActiveItems: async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/inventory/items`);
+      const response = await fetch(`${API_BASE_URL}/inventory/items/active`);
       if (!response.ok) {
-        throw new Error('Failed to fetch inventory');
+        throw new Error('Failed to fetch active items');
       }
       return await response.json();
     } catch (error) {
@@ -108,11 +78,11 @@ export const api = {
     }
   },
 
-  getActiveItems: async () => {
+  getInventoryItems: async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/inventory/items/active`);
+      const response = await fetch(`${API_BASE_URL}/inventory/items`);
       if (!response.ok) {
-        throw new Error('Failed to fetch active items');
+        throw new Error('Failed to fetch inventory');
       }
       return await response.json();
     } catch (error) {
@@ -241,6 +211,28 @@ export const api = {
       if (!response.ok) {
         throw new Error('Failed to fetch out of stock items');
       }
+      return await response.json();
+    } catch (error) {
+      console.error('API Error:', error);
+      throw error;
+    }
+  },
+
+  // Orders (additional)
+  updateOrderStatus: async (orderId, status) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/orders/${orderId}/status`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ status }),
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to update order status');
+      }
+      
       return await response.json();
     } catch (error) {
       console.error('API Error:', error);
