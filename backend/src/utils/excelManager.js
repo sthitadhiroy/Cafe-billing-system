@@ -6,8 +6,12 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const DATA_DIR = path.join(__dirname, '../../data');
+// Use /tmp for Render free tier (data is lost on restart)
+const DATA_DIR = process.env.DATA_DIR || '/tmp/cafe-data';
 const EXCEL_FILE = path.join(DATA_DIR, 'cafe-data.xlsx');
+
+//const DATA_DIR = path.join(__dirname, '../../data');//
+//const EXCEL_FILE = path.join(DATA_DIR, 'cafe-data.xlsx');//
 
 class ExcelManager {
   constructor() {
